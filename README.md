@@ -1,29 +1,29 @@
-# Guida Completa: Personalizzare lo Sfondo del Lock Screen su Linux Mint XFCE
+# 🔒 Complete Guide: Customize Lock Screen Background on Linux Mint XFCE
 
-*Come risolvere i conflitti tra lock screen e impostare la tua immagine personalizzata*
+*How to resolve lock screen conflicts and set your custom image*
 
 ---
 
-## Indice
+## Table of Contents
 
-1. [Il Problema](#il-problema)
-2. [Soluzione Step-by-Step](#soluzione-step-by-step)
-3. [Configurazione Finale](#configurazione-finale)
+1. [The Problem](#the-problem)
+2. [Step-by-Step Solution](#step-by-step-solution)
+3. [Final Configuration](#final-configuration)
 4. [Troubleshooting](#troubleshooting)
-5. [Script Automatico](#script-automatico)
-6. [Conclusioni](#conclusioni)
+5. [Automatic Script](#automatic-script)
+6. [Conclusions](#conclusions)
 
 ---
 
-## Il Problema
+## The Problem
 
-Su Linux Mint XFCE, è comune avere **conflitti tra multiple lock screen** che causano:
-- Sfondi neri
-- Lock screen duplicati
-- Impossibilità di personalizzare lo sfondo
-- Errori di servizio
+On Linux Mint XFCE, it's common to have **conflicts between multiple lock screens** that cause:
+- Black backgrounds
+- Duplicate lock screens
+- Inability to customize the background
+- Service errors
 
-**Sintomi tipici:**
+**Typical symptoms:**
 ```
 GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: 
 The name org.freedesktop.ScreenSaver was not provided by any .service files
@@ -31,53 +31,53 @@ The name org.freedesktop.ScreenSaver was not provided by any .service files
 
 ---
 
-## Soluzione Step-by-Step
+## Step-by-Step Solution
 
-### Passo 1: Pulizia Completa del Sistema
+### Step 1: Complete System Cleanup
 
-Prima di tutto, rimuoviamo tutti i lock screen esistenti e i loro file di configurazione:
+First, let's remove all existing lock screens and their configuration files:
 
 ```bash
-# Rimuovi tutti i pacchetti lock screen
+# Remove all lock screen packages
 sudo apt remove --purge light-locker light-locker-settings xfce4-screensaver xscreensaver cinnamon-screensaver mate-screensaver -y
 
-# Rimuovi file di configurazione residui
+# Remove residual configuration files
 sudo find /etc -name "*screensaver*" -o -name "*light-locker*" 2>/dev/null | xargs sudo rm -f
 sudo find /usr -name "*screensaver*" -o -name "*light-locker*" 2>/dev/null | xargs sudo rm -f
 rm -rf ~/.config/autostart/*screensaver* ~/.config/autostart/*light-locker*
 ```
 
-### Passo 2: Reinstallazione Pulita
+### Step 2: Clean Reinstallation
 
-Reinstalliamo solo i componenti necessari:
+Reinstall only the necessary components:
 
 ```bash
-# Aggiorna i repository
+# Update repositories
 sudo apt update
 
-# Installa light-locker e gnome-screensaver (necessario per il servizio)
+# Install light-locker and gnome-screensaver (required for the service)
 sudo apt install light-locker light-locker-settings gnome-screensaver -y
 ```
 
-### Passo 3: Preparazione dell'Immagine
+### Step 3: Image Preparation
 
-Copia la tua immagine preferita in una posizione accessibile al sistema:
+Copy your preferred image to a system-accessible location:
 
 ```bash
-# Trova la tua immagine
+# Find your image
 find /home/$USER -name "*wallpaper*" -o -name "*pxfuel*" 2>/dev/null
 
-# Copia l'immagine nel sistema (sostituisci con il percorso della tua immagine)
+# Copy image to system (replace with your image path)
 sudo cp "/home/$USER/Pictures/wallpaperflare.com_wallpaper (1).jpg" /usr/share/backgrounds/lockscreen.jpg
 sudo chmod 644 /usr/share/backgrounds/lockscreen.jpg
 ```
 
-### Passo 4: Configurazione XFCE
+### Step 4: XFCE Configuration
 
-Configura XFCE per usare light-locker:
+Configure XFCE to use light-locker:
 
 ```bash
-# Crea la configurazione XFCE
+# Create XFCE configuration
 cat > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-session" version="1.0">
@@ -89,150 +89,150 @@ cat > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml << 'EOF'
 EOF
 ```
 
-### Passo 5: Configurazione dello Sfondo
+### Step 5: Background Configuration
 
-Imposta la tua immagine come sfondo del lock screen:
+Set your image as the lock screen background:
 
 ```bash
-# Configura gsettings per usare la tua immagine
+# Configure gsettings to use your image
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/lockscreen.jpg"
 gsettings set org.gnome.desktop.screensaver picture-options "scaled"
 ```
 
-### Passo 6: Test
+### Step 6: Test
 
-Testa il sistema:
+Test the system:
 
 ```bash
-# Testa il lock screen
+# Test the lock screen
 light-locker-command -l
 ```
 
 ---
 
-## Configurazione Finale
+## Final Configuration
 
-### Struttura File
+### File Structure
 
 ```
 /usr/share/backgrounds/
-├── lockscreen.jpg          # La tua immagine principale
-└── lockscreen-alt.jpg      # Immagine alternativa (opzionale)
+├── lockscreen.jpg          # Your main image
+└── lockscreen-alt.jpg      # Alternative image (optional)
 
 ~/.config/xfce4/xfconf/xfce-perchannel-xml/
-└── xfce4-session.xml       # Configurazione XFCE
+└── xfce4-session.xml       # XFCE configuration
 ```
 
-### Comandi Utili
+### Useful Commands
 
 ```bash
-# Blocca lo schermo manualmente
+# Lock screen manually
 light-locker-command -l
 
-# Cambia immagine (sostituisci con il percorso della nuova immagine)
-sudo cp "/percorso/nuova/immagine.jpg" /usr/share/backgrounds/lockscreen.jpg
+# Change image (replace with path to new image)
+sudo cp "/path/to/new/image.jpg" /usr/share/backgrounds/lockscreen.jpg
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/lockscreen.jpg"
 
-# Verifica lo stato del lock screen
+# Check lock screen status
 ps aux | grep light-locker
 ```
 
 ---
 
-## Script Automatico
+## Automatic Script
 
-Per automatizzare il processo, usa lo script `set-lockscreen.sh` incluso in questa repository:
+To automate the process, use the included `set-lockscreen.sh` script:
 
 ```bash
-# Rendi eseguibile lo script
+# Make script executable
 chmod +x set-lockscreen.sh
 
-# Esegui lo script
+# Run the script
 ./set-lockscreen.sh
 ```
 
-Lo script:
-- Trova automaticamente le immagini nella stessa cartella
-- Ti permette di scegliere tra le immagini disponibili
-- Configura automaticamente il lock screen
-- Gestisce i permessi e le configurazioni
+The script:
+- Automatically finds images in the same folder
+- Lets you choose between available images
+- Automatically configures the lock screen
+- Handles permissions and configurations
 
 ---
 
 ## Troubleshooting
 
-### Problema: "ServiceUnknown" Error
+### Problem: "ServiceUnknown" Error
 
-**Causa:** Manca il servizio gnome-screensaver
+**Cause:** Missing gnome-screensaver service
 
-**Soluzione:**
+**Solution:**
 ```bash
 sudo apt install gnome-screensaver -y
 ```
 
-### Problema: Sfondo Nero
+### Problem: Black Background
 
-**Causa:** Immagine non accessibile o permessi sbagliati
+**Cause:** Image not accessible or wrong permissions
 
-**Soluzione:**
+**Solution:**
 ```bash
-# Verifica che l'immagine esista
+# Verify image exists
 ls -la /usr/share/backgrounds/lockscreen.jpg
 
-# Correggi i permessi
+# Fix permissions
 sudo chmod 644 /usr/share/backgrounds/lockscreen.jpg
 
-# Reimposta gsettings
+# Reset gsettings
 gsettings set org.gnome.desktop.screensaver picture-uri "file:///usr/share/backgrounds/lockscreen.jpg"
 ```
 
-### Problema: Lock Screen Duplicati
+### Problem: Duplicate Lock Screens
 
-**Causa:** File di configurazione residui
+**Cause:** Residual configuration files
 
-**Soluzione:**
+**Solution:**
 ```bash
-# Rimuovi tutti gli autostart
+# Remove all autostart files
 rm -f ~/.config/autostart/*lock* ~/.config/autostart/*screensaver*
 
-# Riavvia la sessione
+# Restart session
 sudo reboot
 ```
 
 ---
 
-## Conclusioni
+## Conclusions
 
-Con questa guida hai:
+With this guide you have:
 
-- **Risolto** i conflitti tra lock screen
-- **Configurato** light-locker come sistema principale
-- **Impostato** la tua immagine personalizzata
-- **Creato** un sistema stabile e funzionante
+- **Resolved** lock screen conflicts
+- **Configured** light-locker as main system
+- **Set** your custom image
+- **Created** a stable and functional system
 
-### Vantaggi della Soluzione
+### Solution Benefits
 
-- **Sistema pulito:** Nessun conflitto tra lock screen
-- **Personalizzabile:** Facile cambiare l'immagine
-- **Stabile:** Configurazione standard XFCE
-- **Manutenibile:** Facile da aggiornare e modificare
+- **Clean system:** No conflicts between lock screens
+- **Customizable:** Easy to change image
+- **Stable:** Standard XFCE configuration
+- **Maintainable:** Easy to update and modify
 
-### Prossimi Passi
+### Next Steps
 
-1. **Personalizza ulteriormente:** Usa "Light Locker Settings" per altre opzioni
-2. **Backup:** Salva la configurazione per futuri aggiornamenti
-3. **Esplora:** Prova altre immagini per il lock screen
+1. **Further customization:** Use "Light Locker Settings" for other options
+2. **Backup:** Save configuration for future updates
+3. **Explore:** Try other images for the lock screen
 
 ---
 
-## Risorse Aggiuntive
+## Additional Resources
 
-- [Documentazione ufficiale XFCE](https://docs.xfce.org/)
+- [Official XFCE Documentation](https://docs.xfce.org/)
 - [Linux Mint Community](https://forums.linuxmint.com/)
 - [Light Locker GitHub](https://github.com/the-cavalry/light-locker)
 
 ---
 
-*Guida creata per risolvere i problemi di lock screen su Linux Mint XFCE. Testata e funzionante!*
+*Guide created to solve lock screen issues on Linux Mint XFCE. Tested and working!*
 
-**Buon lock screen personalizzato!**
+**Enjoy your personalized lock screen! 🔒✨**
